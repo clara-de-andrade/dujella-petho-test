@@ -18,6 +18,3 @@ python/
     cache.py:
         Funções para armazenar os valores calculados em cache.pkl (usando a
         library pickle).
-
-    demo.mp4:
-        Demonstração do programa main.py em operação. (47min12s)
