@@ -224,10 +224,11 @@ def init_q_epsilon_N(cache):
             if successful:
                 break
             else:
-                q = {}
-                epsilon = {}
-                N = {}
-                t += 50
+                exit(1)
+                # q = {}
+                # epsilon = {}
+                # N = {}
+                # t += 50
         print()
     print(
         "PRONTO!",
