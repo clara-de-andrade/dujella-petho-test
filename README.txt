@@ -19,17 +19,5 @@ python/
         Funções para armazenar os valores calculados em cache.pkl (usando a
         library pickle).
 
-    cache.pkl:
-        Arquivo binário com as cotas calculadas e vários valores importantes
-        associados. Execute
-
-        ```
-        with open("cache.pkl", "rb") as f:
-            cache = pickle.load(f)
-        ```
-
-        em uma shell do Python para acessar o conteúdo do arquivo como um
-        dicionário `cache`.
-
     demo.mp4:
         Demonstração do programa main.py em operação. (47min12s)
