@@ -1,0 +1,7 @@
+.vscode/
+
+python/__pycache__
+
+*.mp4
+*.pkl
+*.tar.gz
