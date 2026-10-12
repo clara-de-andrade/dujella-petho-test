@@ -3,7 +3,7 @@ from mpmath import mp as ctx
 from mpmath import mpf as mpf
 from mpmath import nstr, log, power, floor, findroot
 
-from base import nint_dist, prog_bar
+from base import nint_dist, qconv, prog_bar
 from cache import load_cache, update_cache, purge_cache
 
 
