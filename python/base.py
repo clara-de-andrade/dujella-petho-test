@@ -1,4 +1,5 @@
 from mpmath import nint
+from math import floor, ceil
 
 
 def nint_dist(x):
@@ -6,4 +7,4 @@ def nint_dist(x):
 
 def prog_bar(i, i_max):
     prog = int(100 * i / i_max)
-    return f"|{"=" * (prog // 5)}{"." * ((100 - prog) // 5)}| {prog}%   "
+    return f"[{"#" * floor(prog / 4)}{" " * ceil((100 - prog) / 4)}] {prog}%   "
