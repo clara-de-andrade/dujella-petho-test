@@ -1,6 +1,7 @@
 .vscode/
 
 python/__pycache__
+c_lang/main
 
 *.mp4
 *.pkl

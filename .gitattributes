@@ -3,5 +3,3 @@
 *.c text eol=lf
 *.py text eol=lf
 *.txt text eol=lf
-
-*.tar.gz binary
