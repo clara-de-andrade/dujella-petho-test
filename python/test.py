@@ -171,7 +171,6 @@ def init_q_epsilon_N(cache):
             successful = True
             for m in range(3, m_max + 1):
                 for k in range(3, min(m, k_max) + 1):
-                    print(f"  (m = {m}, k = {k}, t = {t}) Computando q...")
                     u, v = 1, 0
                     eta = gamma[m, k]
 
@@ -188,7 +187,6 @@ def init_q_epsilon_N(cache):
 
                     q[m, k] = v
 
-                    print(f"  (m = {m}, k = {k}, t = {t}) Computando epsilon...")
                     t1, t2 = nint_dist(q[m, k] * mu[m, k]), nint_dist(q[m, k] * gamma[m, k])
                     if t1 == 0 or t2 == 0:
                         print(f"  Erro de precisão em t = {t}!")
@@ -204,7 +202,6 @@ def init_q_epsilon_N(cache):
 
                     epsilon[m, k] = eps
 
-                    print(f"  (m = {m}, k = {k}, t = {t}) Computando N...")
                     log_q = log(q[m, k])
                     log_epsilon = log(epsilon[m, k])
                     n_max = floor((m_max * (log_A + log_q - log_epsilon) / log_B))
