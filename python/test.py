@@ -171,21 +171,15 @@ def init_q_epsilon_N(cache):
             successful = True
             for m in range(3, m_max + 1):
                 for k in range(3, min(m, k_max) + 1):
-                    u, v = 1, 0
-                    eta = gamma[m, k]
+                    q_temp = qconv(gamma[m, k], t)
 
-                    for _ in range(t):
-                        a = floor(eta)
-                        u, v = v, a * v + u
-                        eta = 1 / (eta - a)
-
-                    if not v > 6 * n_max:
-                        print(f"  q({k}, {m})_{t} == {nstr(v, 10)}")
+                    if not q_temp > 6 * n_max:
+                        print(f"  q({k}, {m})_{t} == {nstr(q_temp, 10)}")
                         print(f"  q({k}, {m})_{t} <= 6 * n_max")
                         successful = False
                         break
 
-                    q[m, k] = v
+                    q[m, k] = q_temp
 
                     t1, t2 = nint_dist(q[m, k] * mu[m, k]), nint_dist(q[m, k] * gamma[m, k])
                     if t1 == 0 or t2 == 0:
@@ -193,25 +187,25 @@ def init_q_epsilon_N(cache):
                         successful = False
                         break
         
-                    eps = t1 - n_max * t2
-                    if not eps > 0:
-                        print(f"  epsilon[{m}, {k}]_{t} == {nstr(eps, 10)}")
+                    epsilon_temp = t1 - n_max * t2
+                    if not epsilon_temp > 0:
+                        print(f"  epsilon[{m}, {k}]_{t} == {nstr(epsilon_temp, 10)}")
                         print(f"  epsilon[{m}, {k}]_{t} <= 0")
                         successful = False
                         break
 
-                    epsilon[m, k] = eps
+                    epsilon[m, k] = epsilon_temp
 
                     log_q = log(q[m, k])
                     log_epsilon = log(epsilon[m, k])
-                    n_max = floor((m_max * (log_A + log_q - log_epsilon) / log_B))
+                    N_temp = floor((m_max * (log_A + log_q - log_epsilon) / log_B))
 
-                    if not n_max > 0:
+                    if not N_temp > 0:
                         print(f"  Erro de precisão em t = {t}!")
                         successful = False
                         break
 
-                    N[m, k]  = n_max
+                    N[m, k]  = N_temp
 
                 if not successful:
                     break
