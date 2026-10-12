@@ -154,7 +154,7 @@ def init_q_epsilon_N(cache):
     log_B = log(mpf("1.65"))
 
     print(
-        f"Pré-computando q(k, m)_t e epsilon(k, m)_t para",
+        f"Pré-computando q(k, m)_t, epsilon(k, m)_t e N(k, m)_t para",
         f"  3 <= m <= {m_max}",
         f"  3 <= k <= min(m, {k_max})",
         f"  t >= {t_min}",
