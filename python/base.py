@@ -6,4 +6,4 @@ def nint_dist(x):
 
 def prog_bar(i, i_max):
     prog = int(100 * i / i_max)
-    return f"|{"=" * (prog // 5)}{"." * ((100 - prog) // 5)}| {prog}%"
+    return f"|{"=" * (prog // 5)}{"." * ((100 - prog) // 5)}| {prog}%   "
