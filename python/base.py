@@ -7,4 +7,4 @@ def nint_dist(x):
 
 def prog_bar(i, i_max):
     prog = int(100 * i / i_max)
-    return f"[{"#" * floor(prog / 4)}{" " * ceil((100 - prog) / 4)}] {prog}%   "
+    return f"[{"#" * floor(prog / 2)}{" " * ceil((100 - prog) / 2)}] {prog}%   "
