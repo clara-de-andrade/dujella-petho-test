@@ -6,9 +6,7 @@
 
 /* ************************************************************************* */
 
-typedef void (mpfr_fun_t)(mpfr_t, mpfr_t);
-
-void findroot(mpfr_t root, uint64_t k, mpfr_t x0, mpfr_prec_t prec);
+void findroot(mpfr_t root, uint64_t k, mpfr_prec_t prec);
 
 /* ************************************************************************* */
 

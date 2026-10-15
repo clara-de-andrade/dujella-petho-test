@@ -81,19 +81,19 @@ void init_alpha_g(uint64_t k_max, mpfr_prec_t prec)
     g     = calloc(k_max + 1, sizeof(mpfr_t));
 
     mpfr_t num, den;
-    mpfr_inits(num, den, NULL);
+    mpfr_inits2(prec, num, den, NULL);
 
     for (uint64_t k = k_min; k <= k_max; k++)
     {
-        mpfr_init(alpha[k]);
-        findroot(alpha[k], k, 2, prec);
+        mpfr_init2(alpha[k], prec);
+        findroot(alpha[k], k, prec);
         
         mpfr_sub_ui(num, alpha[k], 1, MPFR_RNDN);
         mpfr_sub_ui(den, alpha[k], 2, MPFR_RNDN);
         mpfr_mul_ui(den, den, k + 1, MPFR_RNDN);
         mpfr_add_ui(den, den, 2, MPFR_RNDN);
 
-        mpfr_init(g[k]);
+        mpfr_init2(g[k], prec);
         mpfr_div(g[k], num, den, MPFR_RNDN);
 
         prog_bar(k, k_max);
