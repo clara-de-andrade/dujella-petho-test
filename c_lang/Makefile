@@ -3,9 +3,9 @@ CFLAGS = -Wall -Wextra
 INCLUDES = -I./
 LIBS = -lm -lgmp -lmpfr
 
-SRCS =	base.c \
-		test.c \
-		main.c
+SRCS = base.c \
+       test.c \
+       main.c
 OBJS = $(SRCS:.c=.o)
 EXEC = main
 
