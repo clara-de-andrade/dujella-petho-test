@@ -2,6 +2,7 @@
 
 python/__pycache__
 c_lang/main
+c_lang/main.exe
 
 *.mp4
 *.pkl
