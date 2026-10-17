@@ -1,4 +1,5 @@
 from mpmath import nint
+from mpmath import floor as mp_floor
 from math import floor, ceil
 
 
@@ -9,7 +10,7 @@ def qconv(eta, t):
     u, v = 1, 0
 
     for _ in range(t):
-        a = floor(eta)
+        a = mp_floor(eta)
         u, v = v, a * v + u
         eta = 1 / (eta - a)
 

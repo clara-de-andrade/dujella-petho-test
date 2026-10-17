@@ -55,7 +55,7 @@ o resultado principal em tempo finito.
 
 from mpmath import nstr
 
-from test import (
+from tests import (
     init_cache,
     init_kbonacci,
     init_alpha_g,

@@ -81,9 +81,8 @@ def init_alpha_g(cache):
 
     if not alpha or not g:
         for k in range(3, k_max + 1):
-            p = lambda x: x**(k + 1) - 2 * x**k + 1
-            inf = 2 * (1 - power(2, -k))
-            alpha[k] = findroot(p, (inf, 2), solver="anderson")
+            p = lambda x: x**k - sum(x**i for i in range(k))
+            alpha[k] = findroot(p, 2)
 
             g[k] = (alpha[k] - 1) / (2 + (k + 1) * (alpha[k] - 2))
 
