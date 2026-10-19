@@ -60,8 +60,8 @@ from tests import (
     init_kbonacci,
     init_alpha_g,
     init_gamma_mu,
-    init_q_epsilon_N,
-    init_cotas
+    test_q_epsilon_N,
+    init_cotas,
 )
 
 """
@@ -82,6 +82,8 @@ Estes valores de t_min e prec são experimentais e podem ser ajustados.
 # Inicializar cache.
 cache = {}
 
+print("Inicializando cache...\n")
+
 # Inicializar precisão e cota inferior de t com valores experimentais, e
 # inicializar as cotas superiores de n, s e k com a cota superior de m.
 cache.update(init_cache(prec = 4096, t_min = 700, m_max = 1394))
@@ -91,6 +93,15 @@ print(
     f"  prec  = {cache["prec"]}",
     f"  t_min = {cache["t_min"]}",
     f"  m_max = {cache["m_max"]}",
+    "",
+    sep="\n"
+)
+
+print(
+    "Cotas iniciais:",
+    f"  n <= {nstr(cache["n_max"], 3)}",
+    f"  s <= {nstr(cache["s_max"], 3)}",
+    f"  k <= {int(cache["k_max"])}",
     "",
     sep="\n"
 )
@@ -141,7 +152,7 @@ onde A = 2.01 e B = 1.65 ** (1 / 1394). Simultaneamente, computamos o valor de
 com t >= t_min, para 3 <= m <= 1394 e 3 <= k <= min(m, log s).
 """
 
-cache.update(init_q_epsilon_N(cache))
+cache.update(test_q_epsilon_N(cache))
 
 print(
     "Verificado que q(m, k)_t > 6 * n, epsilon(m, k)_t > 0 para:",
@@ -173,19 +184,10 @@ superior s_max de s é igual a floor((N_min - 2) / 2), e por fim, no caso
 cache.update(init_cotas(cache))
 
 print(
-    "Cotas iniciais:",
-    f"  n <= {nstr(cache["n_max"], 3)}",
-    f"  s <= {nstr(cache["s_max"], 3)}",
-    f"  k <= {int(cache["k_max"])}",
-    "",
-    sep="\n"
-)
-
-print(
     "Cotas finais:",
-    f"  n <= {int(cache["n_max_out"])}",
-    f"  s <= {int(cache["s_max_out"])}",
-    f"  k <= {int(cache["k_max_out"])}",
+    f"  n <= {cache["n_max"]}",
+    f"  s <= {cache["s_max"]}",
+    f"  k <= {cache["k_max"]}",
     "",
     sep="\n"
 )

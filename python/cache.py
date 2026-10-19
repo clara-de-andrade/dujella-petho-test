@@ -22,7 +22,7 @@ def update_cache(new_cache, filename="cache.pkl"):
 
     return cache
 
-def load_cache(key, default_value=None, filename="cache.pkl"): 
+def load_cache(key=None, default_value=None, filename="cache.pkl"): 
     if not os.path.exists(filename):
         with open(filename, "x") as f:
             pass
@@ -35,7 +35,10 @@ def load_cache(key, default_value=None, filename="cache.pkl"):
         except EOFError:
             pass
 
-    return cache.get(key, default_value)
+    if key:
+        return cache.get(key, default_value)
+    else:
+        return cache
 
 def purge_cache(filename="cache.pkl"):
     if not os.path.exists(filename):
@@ -43,3 +46,5 @@ def purge_cache(filename="cache.pkl"):
 
     with open(filename, "wb") as f:
         pickle.dump({}, f)
+
+    return {}

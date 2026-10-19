@@ -1,38 +1,60 @@
 
+from itertools import product
+
 from mpmath import mp as ctx
 from mpmath import mpf as mpf
-from mpmath import nstr, log, power, floor, findroot
+from mpmath import nstr, exp, log, power, floor, ceil, findroot
 
 from base import nint_dist, qconv, prog_bar
 from cache import load_cache, update_cache, purge_cache
 
 
 def init_cache(prec, t_min, m_max):
-    if prec != load_cache("prec", -1):
-        purge_cache()
-    if t_min != load_cache("t_min", -1):
-        purge_cache()
-    if m_max != load_cache("m_max", -1):
-        purge_cache()
+    cache = load_cache()
+    flag = False
+
+    if prec != cache.get("prec"):
+        cache = purge_cache()
+        flag = True
 
     # Precisão dos cálculos com números decimais no mpmath, em bits.
     ctx.prec = prec
 
-    # Cota superior de s. Dada por s <= 4.7e14 * (m ** 5) * (log(m) ** 4).
-    s_max = floor(mpf("4.7e14") * (m_max ** 5) * (log(m_max) ** 4))    
-    # Cota superior de k. Dada por k <= log(s).
-    k_max = floor(log(s_max))
-    # Cota superior de n. Dada por n <= m * s + 2.
-    n_max = m_max * s_max + 2
+    if t_min != cache.get("t_min"):
+        cache = purge_cache()
+        flag = True
+        
+    if m_max != cache.get("m_max"):
+        cache = purge_cache()
+        flag = True
 
-    return update_cache({
-        "prec": prec,
-        "t_min": t_min,
-        "m_max": m_max,
-        "n_max": n_max,
-        "s_max": s_max,
-        "k_max": k_max,
-    })
+    s_max = cache.get("s_max")
+    if not s_max:
+        # Cota superior de s. Dada por s <= 4.7e14 * (m ** 5) * (log(m) ** 4).
+        s_max = floor(mpf("4.7e14") * (m_max ** 5) * (log(m_max) ** 4))    
+        flag = True
+
+    k_max = cache.get("k_max")
+    if not k_max:
+        # Cota superior de k. Dada por k <= log(s).
+        k_max = int(floor(log(s_max)))
+        flag = True
+
+    n_max = cache.get("n_max")
+    if not n_max:
+        # Cota superior de n. Dada por n <= m * s + 2.
+        n_max = m_max * s_max + 2
+        flag = True
+
+    if True:
+        return update_cache({
+            "prec": prec,
+            "t_min": t_min,
+            "m_max": m_max,
+            "n_max": n_max,
+            "s_max": s_max,
+            "k_max": k_max,
+        })
 
 
 def init_kbonacci(cache):
@@ -46,7 +68,6 @@ def init_kbonacci(cache):
         sep="\n")
 
     kbonacci = cache.get("kbonacci", {})
-
     if not kbonacci:
         for k in range(3, k_max + 1):
             prev = [0] * (k - 2) + [1] * 2
@@ -58,14 +79,16 @@ def init_kbonacci(cache):
             print(prog_bar(k, k_max), end="\r")
         print()
 
+        cache = update_cache({
+            "kbonacci": kbonacci
+        })
+
     print(
         "PRONTO!",
         "",
         sep="\n")
 
-    return update_cache({
-        "kbonacci": kbonacci
-    })
+    return cache
 
 
 def init_alpha_g(cache):
@@ -88,15 +111,18 @@ def init_alpha_g(cache):
 
             print(prog_bar(k, k_max), end="\r")
         print()
+
+        cache = update_cache({
+            "alpha": alpha,
+            "g": g
+        })
+
     print(
         "PRONTO!",
         "",
         sep="\n")
 
-    return update_cache({
-        "alpha": alpha,
-        "g": g
-    })
+    return cache
 
 
 def init_gamma_mu(cache):
@@ -113,8 +139,8 @@ def init_gamma_mu(cache):
         f"  3 <= k <= min(m, {k_max})",
         sep="\n")
 
-    gamma = load_cache("gamma", {})
-    mu = load_cache("mu", {})
+    gamma = cache.get("gamma", {})
+    mu = cache.get("mu", {})
 
     if not gamma or not mu:
         for m in range(3, m_max + 1):
@@ -128,19 +154,22 @@ def init_gamma_mu(cache):
 
             print(prog_bar(m, m_max), end="\r")
         print()
+        
+        cache = update_cache({
+            "gamma": gamma,
+            "mu": mu
+        })
 
     print(
         "PRONTO!",
         "",
         sep="\n")
 
-    return update_cache({
-        "gamma": gamma,
-        "mu": mu
-    })
+    return cache
 
 
-def init_q_epsilon_N(cache):
+
+def test_q_epsilon_N(cache):
     m_max = int(cache["m_max"])
     k_max = int(cache["k_max"])
     t_min = int(cache["t_min"])
@@ -159,9 +188,9 @@ def init_q_epsilon_N(cache):
         f"  t >= {t_min}",
         sep="\n")
 
-    q = load_cache("q", {})
-    epsilon = load_cache("epsilon", {})
-    N = load_cache("N", {})
+    q = cache.get("q", {})
+    epsilon = cache.get("epsilon", {})
+    N = cache.get("N", {})
 
     t = t_min
     if not q or not epsilon or not N:
@@ -220,32 +249,45 @@ def init_q_epsilon_N(cache):
                 # N = {}
                 # t += 50
         print()
+        
+        cache = update_cache({
+            "t": t,
+            "q": q,
+            "epsilon": epsilon,
+            "N": N
+        })
+
     print(
         "PRONTO!",
         "",
         sep="\n")
 
-    return update_cache({
-        "t": t,
-        "q": q,
-        "epsilon": epsilon,
-        "N": N,
-    })
+    return cache
 
 
 def init_cotas(cache):
-    N = cache["N"]
+    m_max = cache["m_max"]
+    n_max = cache["n_max"]
+    k_max = cache["k_max"]
+    s_max = cache["s_max"]
 
+    N = cache["N"]
+    
     # Nova cota superior de n. Dada por
     #   n <= log(A * q(k, m_t / epsilon(k, m)_t) / log B.
-    n_max_out = int(min(N.values()))
+    n_max_new = int(min(N[m, k] for m in range(3, m_max + 1) for k in range(3, min(m, k_max) + 1)))
     # Nova cota superior de s. Dada por s <= (n - 2) * (m - 1).
-    s_max_out = int(floor((n_max_out - 2) / (3 - 1)))
+    s_max_new = int(floor((n_max_new - 2) / (3 - 1)))
     # Nova cota superior de k. Dada por k <= log s.
-    k_max_out = int(floor(log(s_max_out)))
+    k_max_new = int(floor(log(s_max_new)))
 
-    return update_cache({
-        "n_max_out": n_max_out,
-        "s_max_out": s_max_out,
-        "k_max_out": k_max_out,
-    })
+    if [n_max, k_max, s_max] != [n_max_new, k_max_new, s_max_new]:
+        cache = update_cache({
+                "n_max": n_max_new,
+                "s_max": s_max_new,
+                "k_max": k_max_new,
+        })
+
+    return cache
+
+
