@@ -4,10 +4,10 @@ from mpmath import nint
 from mpmath import floor as mp_floor
 from math import floor, ceil
 
+###############################################################################
 
 def nint_dist(x):
     return abs(x - nint(x))
-
 
 def prog_bar(i, i_max):
     prog = int(100 * i / i_max)
