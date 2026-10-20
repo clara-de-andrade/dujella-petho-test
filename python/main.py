@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """
 Seja k >= 2. Em adição, seja n -> F(k, n) a sequência definida pela relação de
 recorrência F(k, n) = F(k, n - 1) + ... + F(k, n - k), com os valores iniciais
@@ -79,23 +81,7 @@ grande (i.e. t_min = 700) para que q(k, m)_t > 6 * M e epsilon(k, m)_t > 0.
 Estes valores de t_min e prec são experimentais e podem ser ajustados.
 """
 
-# Inicializar cache.
-cache = {}
-
-print("Inicializando cache...\n")
-
-# Inicializar precisão e cota inferior de t com valores experimentais, e
-# inicializar as cotas superiores de n, s e k com a cota superior de m.
-cache.update(init_cache(prec = 4096, t_min = 700, m_max = 1394))
-
-print(
-    "Parâmetros:",
-    f"  prec  = {cache["prec"]}",
-    f"  t_min = {cache["t_min"]}",
-    f"  m_max = {cache["m_max"]}",
-    "",
-    sep="\n"
-)
+cache = init_cache(prec = 4096, t_min = 700, m_max = 1394)
 
 print(
     "Cotas iniciais:",
@@ -145,9 +131,9 @@ Teorema isto implica que não existem soluções da equação (6) para n inteiro
 
     log(A * q(k, m)_t / epsilon(k, m)_t) / log(B) <= n < M,
 
-onde A = 2.01 e B = 1.65 ** (1 / 1394). Simultaneamente, computamos o valor de
+onde A = 2.01 e B = 1.65 ** (1 / 1394). Simultaneamente, computamos o mínimo de
 
-    N(k, m)_t = floor(log(A * q(k, m)_t / epsilon(k, m)_t) / log(B)),       (7)
+    min floor(log(A * q(k, m)_t / epsilon(k, m)_t) / log(B)),               (7)
 
 com t >= t_min, para 3 <= m <= 1394 e 3 <= k <= min(m, log s).
 """
@@ -157,13 +143,13 @@ cache.update(test_q_epsilon(cache))
 """
 Passo 4. Computação das cotas obtidas por Dujella-Petho
 
-Satisfeitas as condições do Teorema de Dujella-Petho, calculamos o mínimo de
-N(k, m)_t, com t >= t_min, para 3 <= m <= 1394 e 3 <= k <= min(m, log s), dada
-por (7). Este mínimo N_min é uma cota superior para n melhor que a cota
-superior inicialmente calculada, e com ela podemos obter cotas melhores para s
-e k também, pois s <= (n - 2) * (m - 1) e k <= log s, donde segue que a cota
-superior s_max de s é igual a floor((N_min - 2) / 2), e por fim, no caso
-3 <= m <= 1394, é necessário verificar as soluções de (2) apenas nos intervalos
+Satisfeitas as condições do Teorema de Dujella-Petho, calculamos o mínimo N_min
+de (7), com t >= t_min, para 3 <= m <= 1394 e 3 <= k <= min(m, log s), Este
+mínimo N_min é uma cota superior para n melhor que a cota superior inicialmente
+calculada, e com ela podemos obter cotas melhores para s e k também, pois
+s <= (n - 2) * (m - 1) e k <= log s, donde segue que a cota superior s_max de s
+é igual a floor((N_min - 2) / 2), e por fim, no caso 3 <= m <= 1394, é
+necessário verificar as soluções de (2) apenas nos intervalos
 
                   4 <= m <= 1394,
                   3 <= k <= floor(log s_max),

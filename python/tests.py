@@ -1,5 +1,4 @@
-
-from itertools import product
+#!/usr/bin/python3
 
 from mpmath import mp as ctx
 from mpmath import mpf as mpf
@@ -10,6 +9,15 @@ from cache import load_cache, update_cache, purge_cache
 
 
 def init_cache(prec, t_min, m_max):
+    print(
+        "Inicializando cachê com parâmetros:",
+        f"  prec  = {prec}",
+        f"  t_min = {t_min}",
+        f"  m_max = {m_max}",
+        "",
+        sep="\n"
+    )
+
     cache = load_cache()
     flag = False
 
@@ -47,14 +55,17 @@ def init_cache(prec, t_min, m_max):
         flag = True
 
     if True:
-        return update_cache({
+        cache = update_cache({
             "prec": prec,
             "t_min": t_min,
             "m_max": m_max,
+
             "n_max": n_max,
             "s_max": s_max,
             "k_max": k_max,
         })
+    
+    return cache
 
 
 def init_kbonacci(cache):
@@ -63,8 +74,8 @@ def init_kbonacci(cache):
     
     print(
         f"Pré-computando F(k, m + 1) para",
-        f"  3 <= m <= {m_max}",
-        f"  3 <= k <= {k_max}",
+        f"\t3 <= m <= {m_max}",
+        f"\t3 <= k <= {k_max}",
         sep="\n")
 
     kbonacci = cache.get("kbonacci", {})
@@ -93,10 +104,12 @@ def init_kbonacci(cache):
 
 def init_alpha_g(cache):
     k_max = int(cache["k_max"])
+    prec = cache["prec"]
 
     print(
         f"Pré-computando alpha_k e g_k para",
-        f"  3 <= k <= {k_max}",
+        f"\t3 <= k <= {k_max}",
+        f"com precisão de {prec} bits",
         sep="\n")
 
     alpha = cache.get("alpha", {})
@@ -128,15 +141,18 @@ def init_alpha_g(cache):
 def init_gamma_mu(cache):
     m_max = int(cache["m_max"])
     k_max = int(cache["k_max"])
-
+    
     kbonacci = cache["kbonacci"]
     alpha    = cache["alpha"]
     g        = cache["g"]
 
+    prec = cache["prec"]
+
     print(
         f"Pré-computando gamma(k, m) e mu(k, m) para",
-        f"  3 <= m <= {m_max}",
-        f"  3 <= k <= min(m, {k_max})",
+        f"\t3 <= m <= {m_max}",
+        f"\t3 <= k <= min(m, {k_max})",
+        f"com precisão de {prec} bits",
         sep="\n")
 
     gamma = cache.get("gamma", {})
@@ -168,10 +184,9 @@ def init_gamma_mu(cache):
     return cache
 
 
-
 def test_q_epsilon(cache):
     m_max = int(cache["m_max"])
-    n_max = int(cache["n_max"])
+    n_max = cache["n_max"]
     k_max = int(cache["k_max"])
     t_min = int(cache["t_min"])
 
@@ -179,76 +194,42 @@ def test_q_epsilon(cache):
     gamma = cache["gamma"]
     mu    = cache["mu"]
 
-    log_A = log(mpf("2.01"))
-    log_B = log(mpf("1.65"))
+    prec = cache["prec"]
 
     print(
         f"Testando q(k, m)_t > 6 * n e epsilon(k, m)_t > 0 para",
-        f"  3 <= m <= {m_max}",
-        f"  3 <= k <= min(m, {k_max})",
-        f"  t >= {t_min}",
-        f"  n <= {n_max}",
+        f"\t3 <= m <= {m_max}",
+        f"\t3 <= k <= min(m, {k_max})",
+        f"\tn <= {nstr(n_max, 3)}",
+        f"\tt >= {t_min}",
+        f"com precisão de {prec} bits",
         sep="\n")
 
     q = cache.get("q", {})
     epsilon = cache.get("epsilon", {})
-    N = cache.get("N", {})
 
-    t = t_min
-    if not q or not epsilon or not N:
-        successful = False
-        while not successful:
-            successful = True
-            for m in range(3, m_max + 1):
-                for k in range(3, min(m, k_max) + 1):
-                    q[m, k] = qconv(gamma[m, k], t)
+    if not q or not epsilon:
+        for m in range(3, m_max + 1):
+            for k in range(3, min(m, k_max) + 1):
+                q[m, k] = qconv(gamma[m, k], t_min)
 
-                    if not q[m, k] > 6 * n_max:
-                        print(f"  q({k}, {m})_{t} == {nstr(q[m, k], 10)}")
-                        print(f"  q({k}, {m})_{t} <= 6 * n_max")
-                        successful = False
-                        break
+                if not q[m, k] > 6 * n_max:
+                    print(f"  q({k}, {m})_{t_min} == {nstr(q[m, k], 10)}")
+                    print(f"  q({k}, {m})_{t_min} <= 6 * n_max")
+                    exit(1)
+    
+                epsilon[m, k] = nint_dist(q[m, k] * mu[m, k]) - n_max * nint_dist(q[m, k] * gamma[m, k])
+                if not epsilon[m, k] > 0:
+                    print(f"  epsilon[{m}, {k}]_{t_min} == {nstr(epsilon[m, k], 10)}")
+                    print(f"  epsilon[{m}, {k}]_{t_min} <= 0")
+                    exit(1)
 
-                    t1, t2 = nint_dist(q[m, k] * mu[m, k]), nint_dist(q[m, k] * gamma[m, k])
-                    if t1 == 0 or t2 == 0:
-                        print(f"  Erro de precisão em t = {t}!")
-                        successful = False
-                        break
-        
-                    epsilon[m, k] = t1 - n_max * t2
-                    if not epsilon[m, k] > 0:
-                        print(f"  epsilon[{m}, {k}]_{t} == {nstr(epsilon[m, k], 10)}")
-                        print(f"  epsilon[{m}, {k}]_{t} <= 0")
-                        successful = False
-                        break
-
-                    log_q = log(q[m, k])
-                    log_epsilon = log(epsilon[m, k])
-                    N_temp = floor((m_max * (log_A + log_q - log_epsilon) / log_B))
-
-                    if not N_temp > 0:
-                        print(f"  Erro de precisão em t = {t}!")
-                        successful = False
-                        break
-
-                    N[m, k]  = N_temp
-
-                if not successful:
-                    break
-
-                print(prog_bar(m, m_max), end="\r")
-            
-            if successful:
-                break
-            else:
-                exit(1)
+            print(prog_bar(m, m_max), end="\r")
         print()
         
         cache = update_cache({
-            "t": t,
             "q": q,
-            "epsilon": epsilon,
-            "N": N
+            "epsilon": epsilon
         })
 
     print(
@@ -265,21 +246,43 @@ def init_cotas(cache):
     k_max = cache["k_max"]
     s_max = cache["s_max"]
 
-    N = cache["N"]
+    q       = cache["q"]
+    epsilon = cache["epsilon"]
+
+    print(
+        f"Computando novas cotas para n, k, s...",
+        sep="\n")
+
+    log_A = log(mpf("2.01"))
+    log_B = log(mpf("1.65"))
     
-    # Nova cota superior de n. Dada por
-    #   n <= log(A * q(k, m_t / epsilon(k, m)_t) / log B.
-    n_max_new = int(min(N[m, k] for m in range(3, m_max + 1) for k in range(3, min(m, k_max) + 1)))
+    n_max_new = -1
+    for m in range (3, m_max + 1):
+        for k in range(3, min(m, k_max) + 1):
+            # Candidato a nova cota superior de n. Dado por
+            #   n <= n_max * log(A * q(k, m_t / epsilon(k, m)_t) / log B.
+            temp = int(floor(m_max * (log_A + log(q[m, k]) - log(epsilon[m, k])) / log_B))
+            if n_max_new < 0 or temp < n_max_new:
+                n_max_new = temp
+
+        print(prog_bar(m, m_max), end="\r")
+    print()
+    
     # Nova cota superior de s. Dada por s <= (n - 2) * (m - 1).
     s_max_new = int(floor((n_max_new - 2) / (3 - 1)))
     # Nova cota superior de k. Dada por k <= log s.
     k_max_new = int(floor(log(s_max_new)))
 
+    print(
+        "PRONTO!",
+        "",
+        sep="\n")
+
     if [n_max, k_max, s_max] != [n_max_new, k_max_new, s_max_new]:
         cache = update_cache({
-                "n_max": n_max_new,
-                "s_max": s_max_new,
-                "k_max": k_max_new,
+            "n_max": n_max_new,
+            "s_max": s_max_new,
+            "k_max": k_max_new,
         })
 
     return cache

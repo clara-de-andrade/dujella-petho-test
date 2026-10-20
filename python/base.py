@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from mpmath import nint
 from mpmath import floor as mp_floor
 from math import floor, ceil
@@ -5,6 +7,7 @@ from math import floor, ceil
 
 def nint_dist(x):
     return abs(x - nint(x))
+
 
 def qconv(eta, t):
     u, v = 1, 0
@@ -15,6 +18,7 @@ def qconv(eta, t):
         eta = 1 / (eta - a)
 
     return v
+
 
 def prog_bar(i, i_max):
     prog = int(100 * i / i_max)
