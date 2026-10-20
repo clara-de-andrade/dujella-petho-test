@@ -4,7 +4,7 @@ INCLUDES = -I./
 LIBS = -lm -lgmp -lmpfr
 
 SRCS = base.c \
-       test.c \
+       tests.c \
        main.c
 OBJS = $(SRCS:.c=.o)
 EXEC = main

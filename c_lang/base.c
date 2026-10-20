@@ -4,6 +4,51 @@
 
 /* ************************************************************************* */
 
+void nint_dist(mpfr_t dist, mpfr_t x, mpfr_prec_t prec)
+{
+    mpfr_t temp;
+    mpfr_init2(temp, prec);
+    
+    mpfr_round(temp, x);
+    mpfr_sub(temp, x, temp, MPFR_RNDN);
+    mpfr_abs(dist, temp, MPFR_RNDN);
+
+    mpfr_clear(temp);
+}
+
+void qconv(mpz_t q, mpfr_t eta, uint64_t t_min, mpfr_prec_t prec)
+{
+    mpz_t u, v, temp, a;
+    mpz_inits(u, v, temp, a, NULL);
+
+    mpz_set_ui(u, 1);
+    mpz_set_ui(v, 0);
+
+    mpfr_t eta_new, a_fr;
+    mpfr_inits2(prec, eta_new, a_fr, NULL);
+
+    mpfr_set(eta_new, eta, MPFR_RNDN);
+
+    for (uint64_t t = 0; t < t_min; t++)
+    {
+        mpfr_floor(a_fr, eta_new);
+        mpfr_get_z(a, a_fr, MPFR_RNDN);
+
+        mpz_mul(temp, a, v);
+        mpz_add(temp, temp, u);
+        mpz_set(u, v);
+        mpz_set(v, temp);
+
+        mpfr_sub(eta_new, eta_new, a_fr, MPFR_RNDN);
+        mpfr_ui_div(eta_new, 1, eta_new, MPFR_RNDN);
+    }
+
+    mpz_set(q, v);
+
+    mpz_clears(u, v, temp, a, NULL);
+    mpfr_clears(eta_new, a_fr, NULL);
+}
+
 void findroot(mpfr_t root, uint64_t k, mpfr_prec_t prec)
 {    
     mpfr_t x, step, p, dp, temp;
