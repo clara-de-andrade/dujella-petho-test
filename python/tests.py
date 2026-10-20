@@ -169,8 +169,9 @@ def init_gamma_mu(cache):
 
 
 
-def test_q_epsilon_N(cache):
+def test_q_epsilon(cache):
     m_max = int(cache["m_max"])
+    n_max = int(cache["n_max"])
     k_max = int(cache["k_max"])
     t_min = int(cache["t_min"])
 
@@ -182,10 +183,11 @@ def test_q_epsilon_N(cache):
     log_B = log(mpf("1.65"))
 
     print(
-        f"Pré-computando q(k, m)_t, epsilon(k, m)_t e N(k, m)_t para",
+        f"Testando q(k, m)_t > 6 * n e epsilon(k, m)_t > 0 para",
         f"  3 <= m <= {m_max}",
         f"  3 <= k <= min(m, {k_max})",
         f"  t >= {t_min}",
+        f"  n <= {n_max}",
         sep="\n")
 
     q = cache.get("q", {})
@@ -199,15 +201,13 @@ def test_q_epsilon_N(cache):
             successful = True
             for m in range(3, m_max + 1):
                 for k in range(3, min(m, k_max) + 1):
-                    q_temp = qconv(gamma[m, k], t)
+                    q[m, k] = qconv(gamma[m, k], t)
 
-                    if not q_temp > 6 * n_max:
-                        print(f"  q({k}, {m})_{t} == {nstr(q_temp, 10)}")
+                    if not q[m, k] > 6 * n_max:
+                        print(f"  q({k}, {m})_{t} == {nstr(q[m, k], 10)}")
                         print(f"  q({k}, {m})_{t} <= 6 * n_max")
                         successful = False
                         break
-
-                    q[m, k] = q_temp
 
                     t1, t2 = nint_dist(q[m, k] * mu[m, k]), nint_dist(q[m, k] * gamma[m, k])
                     if t1 == 0 or t2 == 0:
@@ -215,14 +215,12 @@ def test_q_epsilon_N(cache):
                         successful = False
                         break
         
-                    epsilon_temp = t1 - n_max * t2
-                    if not epsilon_temp > 0:
-                        print(f"  epsilon[{m}, {k}]_{t} == {nstr(epsilon_temp, 10)}")
+                    epsilon[m, k] = t1 - n_max * t2
+                    if not epsilon[m, k] > 0:
+                        print(f"  epsilon[{m}, {k}]_{t} == {nstr(epsilon[m, k], 10)}")
                         print(f"  epsilon[{m}, {k}]_{t} <= 0")
                         successful = False
                         break
-
-                    epsilon[m, k] = epsilon_temp
 
                     log_q = log(q[m, k])
                     log_epsilon = log(epsilon[m, k])
@@ -244,10 +242,6 @@ def test_q_epsilon_N(cache):
                 break
             else:
                 exit(1)
-                # q = {}
-                # epsilon = {}
-                # N = {}
-                # t += 50
         print()
         
         cache = update_cache({

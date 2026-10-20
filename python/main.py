@@ -60,7 +60,7 @@ from tests import (
     init_kbonacci,
     init_alpha_g,
     init_gamma_mu,
-    test_q_epsilon_N,
+    test_q_epsilon,
     init_cotas,
 )
 
@@ -152,17 +152,7 @@ onde A = 2.01 e B = 1.65 ** (1 / 1394). Simultaneamente, computamos o valor de
 com t >= t_min, para 3 <= m <= 1394 e 3 <= k <= min(m, log s).
 """
 
-cache.update(test_q_epsilon_N(cache))
-
-print(
-    "Verificado que q(m, k)_t > 6 * n, epsilon(m, k)_t > 0 para:",
-    f"  3 <= m <= {int(cache["m_max"])}",
-    f"  3 <= k <= min(m, {int(cache["k_max"])})",
-    f"  n <= {nstr(cache["n_max"], 3)}",
-    f"  t = {cache["t"]}",
-    "",
-    sep="\n"
-)
+cache.update(test_q_epsilon(cache))
 
 """
 Passo 4. Computação das cotas obtidas por Dujella-Petho
