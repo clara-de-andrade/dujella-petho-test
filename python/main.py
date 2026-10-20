@@ -81,7 +81,7 @@ grande (i.e. t_min = 700) para que q(k, m)_t > 6 * M e epsilon(k, m)_t > 0.
 Estes valores de t_min e prec são experimentais e podem ser ajustados.
 """
 
-cache = init_cache(prec = 4096, t_min = 700, m_max = 1394)
+cache = init_cache(prec = 4096, m_max = 1394)
 
 print(
     "Cotas iniciais:",

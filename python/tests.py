@@ -4,15 +4,14 @@ from mpmath import mp as ctx
 from mpmath import mpf as mpf
 from mpmath import nstr, exp, log, power, floor, ceil, findroot
 
-from base import nint_dist, qconv, prog_bar
+from base import nint_dist, prog_bar
 from cache import load_cache, update_cache, purge_cache
 
 
-def init_cache(prec, t_min, m_max):
+def init_cache(prec, m_max):
     print(
         "Inicializando cachê com parâmetros:",
         f"  prec  = {prec}",
-        f"  t_min = {t_min}",
         f"  m_max = {m_max}",
         "",
         sep="\n"
@@ -28,10 +27,6 @@ def init_cache(prec, t_min, m_max):
     # Precisão dos cálculos com números decimais no mpmath, em bits.
     ctx.prec = prec
 
-    if t_min != cache.get("t_min"):
-        cache = purge_cache()
-        flag = True
-        
     if m_max != cache.get("m_max"):
         cache = purge_cache()
         flag = True
@@ -57,7 +52,6 @@ def init_cache(prec, t_min, m_max):
     if True:
         cache = update_cache({
             "prec": prec,
-            "t_min": t_min,
             "m_max": m_max,
 
             "n_max": n_max,
@@ -188,7 +182,6 @@ def test_q_epsilon(cache):
     m_max = int(cache["m_max"])
     n_max = cache["n_max"]
     k_max = int(cache["k_max"])
-    t_min = int(cache["t_min"])
 
     n_max = cache["n_max"]
     gamma = cache["gamma"]
@@ -197,11 +190,10 @@ def test_q_epsilon(cache):
     prec = cache["prec"]
 
     print(
-        f"Testando q(k, m)_t > 6 * n e epsilon(k, m)_t > 0 para",
+        f"Testando q(k, m) > 6 * n e epsilon(k, m) > 0 para",
         f"\t3 <= m <= {m_max}",
         f"\t3 <= k <= min(m, {k_max})",
         f"\tn <= {nstr(n_max, 3)}",
-        f"\tt >= {t_min}",
         f"com precisão de {prec} bits",
         sep="\n")
 
@@ -211,18 +203,22 @@ def test_q_epsilon(cache):
     if not q or not epsilon:
         for m in range(3, m_max + 1):
             for k in range(3, min(m, k_max) + 1):
-                q[m, k] = qconv(gamma[m, k], t_min)
+                q_old = 1
+                q[m, k] = 0
+                eta = gamma[m, k]
 
-                if not q[m, k] > 6 * n_max:
-                    print(f"  q({k}, {m})_{t_min} == {nstr(q[m, k], 10)}")
-                    print(f"  q({k}, {m})_{t_min} <= 6 * n_max")
-                    exit(1)
-    
-                epsilon[m, k] = nint_dist(q[m, k] * mu[m, k]) - n_max * nint_dist(q[m, k] * gamma[m, k])
-                if not epsilon[m, k] > 0:
-                    print(f"  epsilon[{m}, {k}]_{t_min} == {nstr(epsilon[m, k], 10)}")
-                    print(f"  epsilon[{m}, {k}]_{t_min} <= 0")
-                    exit(1)
+                while True:
+                    a = floor(eta)
+                    eta = 1 / (eta - a)
+                    q_old, q[m, k] = q[m, k], a * q[m, k] + q_old
+                    if not q[m, k] > 6 * n_max:
+                        continue
+
+                    epsilon[m, k] = nint_dist(q[m, k] * mu[m, k]) - n_max * nint_dist(q[m, k] * gamma[m, k])
+                    if not epsilon[m, k] > 0:
+                        continue
+
+                    break
 
             print(prog_bar(m, m_max), end="\r")
         print()
@@ -246,11 +242,15 @@ def init_cotas(cache):
     k_max = cache["k_max"]
     s_max = cache["s_max"]
 
+
     q       = cache["q"]
     epsilon = cache["epsilon"]
 
+    prec = cache["prec"]
+
     print(
-        f"Computando novas cotas para n, k, s...",
+        f"Computando novas cotas para n, k, s",
+        f"com precisão de {prec} bits",
         sep="\n")
 
     log_A = log(mpf("2.01"))
@@ -273,17 +273,17 @@ def init_cotas(cache):
     # Nova cota superior de k. Dada por k <= log s.
     k_max_new = int(floor(log(s_max_new)))
 
-    print(
-        "PRONTO!",
-        "",
-        sep="\n")
-
     if [n_max, k_max, s_max] != [n_max_new, k_max_new, s_max_new]:
         cache = update_cache({
             "n_max": n_max_new,
             "s_max": s_max_new,
             "k_max": k_max_new,
         })
+
+    print(
+        "PRONTO!",
+        "",
+        sep="\n")
 
     return cache
 
