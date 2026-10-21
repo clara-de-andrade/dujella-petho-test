@@ -6,7 +6,8 @@ from tests import (
     init_alpha_g,
     init_gamma_mu,
     test_q_epsilon,
-    init_cotas
+    init_cotas,
+    write_cache
 )
 
 if __name__ == "__main__":
@@ -19,3 +20,5 @@ if __name__ == "__main__":
     init_gamma_mu()
     test_q_epsilon()
     init_cotas()
+
+    write_cache()

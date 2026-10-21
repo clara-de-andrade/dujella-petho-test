@@ -111,7 +111,7 @@ def init_alpha_g():
             step = p / dp
 
             alpha[k] = alpha[k] - step
-            if abs(step) < 2 ** ctx.prec:
+            if abs(step) < (mpf(2) ** -ctx.prec):
                 break
 
         g[k] = (alpha[k] - 1) / (2 + (k + 1) * (alpha[k] - 2))
@@ -181,21 +181,21 @@ def test_q_epsilon():
 
     for m in range(m_min, m_max + 1):
         for k in range(k_min, min(m, k_max) + 1):
+            eta = gamma[m, k]
             q_old = 1
             q[m, k] = 0
-            eta = gamma[m, k]
 
             while True:
                 a = floor(eta)
                 eta = 1 / (eta - a)
                 q_old, q[m, k] = q[m, k], a * q[m, k] + q_old
-                if not q[m, k] > 6 * n_max:
+                if q[m, k] <= 6 * n_max:
                     continue
 
                 t1 = nint_dist(q[m, k] * mu[m, k])
                 t2 = nint_dist(q[m, k] * gamma[m, k])
                 epsilon[m, k] = t1 - n_max * t2
-                if not epsilon[m, k] > 0:
+                if not epsilon[m, k] <= 0:
                     continue
 
                 break
@@ -260,3 +260,34 @@ def init_cotas():
         sep="\n"
     )
 
+
+def write_cache():
+    global m_max
+    global F, alpha, g, gamma, mu
+    global q, epsilon
+    global n_max, s_max, k_max
+
+    cache = {
+        "m_max"  : m_max,
+        "prec"   : ctx.prec,
+
+        "F"      : F,
+        "alpha"  : alpha,
+        "g"      : g,
+        "gamma"  : gamma,
+        "mu"     : mu,
+
+        "q"      : q,
+        "epsilon": epsilon,
+
+        "n_max"  : n_max,
+        "s_max"  : s_max,
+        "k_max"  : m_max,
+    }
+
+    print("Escrevendo cachê em 'cache.pkl'")
+
+    with open("cache.pkl", "wb") as f:
+        pickle.dump(cache, f)
+
+    print("PRONTO!")
