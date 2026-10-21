@@ -225,19 +225,14 @@ def init_cotas():
     log_A = log(mpf("2.01"))
     log_B = log(mpf("1.65"))
     
-    n_max_new = mpf("inf")
-    for m in range (m_min, m_max + 1):
-        for k in range(k_min, min(m, k_max) + 1):
-            # Candidato a nova cota superior de n. Dado por
-            #   n <= n_max * log(A * q(k, m_t / epsilon(k, m)_t) / log B.
-            temp = floor(m_max * (log_A + log(q[m, k]) - log(epsilon[m, k])) / log_B)
-            if temp < n_max_new:
-                n_max_new = temp
-
-        print(prog_bar(m, m_max), end="\r")
-    
+    # Nova cota superior de n. Dada por
+    #   n <= n_max * log(A * q(k, m)_t / epsilon(k, m)_t) / log B.
     global n_max
-    n_max = int(floor(n_max_new))
+    for m in range(m_min, m_max + 1):
+        for k in range(k_min, min(m, k_max) + 1):
+            temp = floor(m_max * (log_A + log(q[m, k]) - log(epsilon[m, k])) / log_B)
+            if temp < n_max:
+                n_max = int(temp)
     
     # Nova cota superior de s. Dada por s <= (n - 2) * (m - 1).
     global s_max
