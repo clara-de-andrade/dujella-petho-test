@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
+import pickle
+
 from mpmath import mp as ctx
 from mpmath import mpf as mpf
-from mpmath import nstr, log, floor
+from mpmath import log, floor, sign, nstr
 
 from base import nint_dist, prog_bar
 
@@ -189,13 +191,13 @@ def test_q_epsilon():
                 a = floor(eta)
                 eta = 1 / (eta - a)
                 q_old, q[m, k] = q[m, k], a * q[m, k] + q_old
-                if q[m, k] <= 6 * n_max:
+                if not q[m, k] > 6 * n_max:
                     continue
 
                 t1 = nint_dist(q[m, k] * mu[m, k])
                 t2 = nint_dist(q[m, k] * gamma[m, k])
                 epsilon[m, k] = t1 - n_max * t2
-                if not epsilon[m, k] <= 0:
+                if not epsilon[m, k] > 0:
                     continue
 
                 break
@@ -228,7 +230,7 @@ def init_cotas():
         for k in range(k_min, min(m, k_max) + 1):
             # Candidato a nova cota superior de n. Dado por
             #   n <= n_max * log(A * q(k, m_t / epsilon(k, m)_t) / log B.
-            temp = m_max * (log_A + log(q[m, k]) - log(epsilon[m, k])) / log_B
+            temp = floor(m_max * (log_A + log(q[m, k]) - log(epsilon[m, k])) / log_B)
             if temp < n_max_new:
                 n_max_new = temp
 
