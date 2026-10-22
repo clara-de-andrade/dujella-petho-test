@@ -228,6 +228,8 @@ def init_cotas():
             temp = floor(m_max * (log_A + log(q[m, k]) - log(epsilon[m, k])) / log_B)
             if temp < n_max:
                 n_max = int(temp)
+
+        prog_bar(m, m_max)
     
     # Nova cota superior de s. Dada por s <= (n - 2) * (m - 1).
     global s_max
