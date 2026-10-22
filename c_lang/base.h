@@ -6,11 +6,7 @@
 
 /* ************************************************************************* */
 
-void nint_dist(mpfr_t dist, mpfr_t x, mpfr_prec_t prec);
-void qconv(mpz_t q, mpfr_t eta, uint64_t t, mpfr_prec_t prec);
-void findroot(mpfr_t root, uint64_t k, mpfr_prec_t prec);
-
-/* ************************************************************************* */
+void nint_dist(mpfr_t dist, mpfr_t x);
 
 void prog_bar(uint64_t i, uint64_t i_max);
 
