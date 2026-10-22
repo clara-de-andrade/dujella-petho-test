@@ -204,12 +204,7 @@ def test_q_epsilon():
 
         print(prog_bar(m, m_max), end="\r")
         
-    print(
-        "",
-        "PRONTO!",
-        "",
-        sep="\n"
-    )
+    print("PRONTO!\n")
 
 ###############################################################################
 
@@ -259,11 +254,6 @@ def init_cotas():
 
 
 def write_cache():
-    global m_max
-    global F, alpha, g, gamma, mu
-    global q, epsilon
-    global n_max, s_max, k_max
-
     cache = {
         "m_max"  : m_max,
         "prec"   : ctx.prec,
