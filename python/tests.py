@@ -204,7 +204,12 @@ def test_q_epsilon():
 
         print(prog_bar(m, m_max), end="\r")
         
-    print("PRONTO!\n")
+    print(
+        "",
+        "PRONTO!",
+        "",
+        sep="\n"
+    )
 
 ###############################################################################
 
