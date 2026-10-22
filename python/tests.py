@@ -47,8 +47,8 @@ def init_cache(prec_init, m_max_init):
 
     print(
         "Cotas iniciais:",
-        f"\tn <= {nstr(n_max, 2)}",
-        f"\ts <= {nstr(s_max, 2)}",
+        f"\tn <= {nstr(n_max, 3)}",
+        f"\ts <= {nstr(s_max, 3)}",
         f"\tk <= {k_max}",
         "",
         sep="\n"
@@ -174,7 +174,7 @@ def test_q_epsilon():
         "Testando q(k, m) > 6 * n e epsilon(k, m) > 0 para",
         f"\t{m_min} <= m <= {m_max}",
         f"\t{k_min} <= k <= min(m, {k_max})",
-        f"\tn <= {nstr(n_max, 2)}",
+        f"\tn <= {nstr(n_max, 3)}",
         f"com precisão de {ctx.prec} bits",
         sep="\n"
     )
