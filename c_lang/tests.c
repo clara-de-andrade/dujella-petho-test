@@ -109,9 +109,11 @@ void init_F()
 {
     printf(
         "Pré-computando F(k, m + 1) para\n"
-        "\t3 <= m <= %llu\n"
-        "\t3 <= k <= %llu\n",
+        "\t%llu <= m <= %llu\n"
+        "\t%llu <= k <= %llu\n",
+        m_min,
         m_max,
+        k_min,
         k_max
     );
 
@@ -175,8 +177,9 @@ void init_alpha_g()
 
     printf(
         "Pré-computando alpha_k e g_k para\n"
-        "\t3 <= k <= %llu\n"
+        "\t%llu <= k <= %llu\n"
         "com precisão de %ld bits\n",
+        k_min,
         k_max,
         prec
     );
@@ -282,10 +285,12 @@ void init_gamma_mu()
 
     printf(
         "Pré-computando gamma(k, m) e mu(k, m) para\n"
-        "\t3 <= m <= %llu\n"
-        "\t3 <= k <= min(m, %llu)\n"
+        "\t%llu <= m <= %llu\n"
+        "\t%llu <= k <= min(m, %llu)\n"
         "com precisão de %ld bits\n",
+        m_min,
         m_max,
+        k_min,
         k_max,
         prec
     );
@@ -375,11 +380,13 @@ void test_q_epsilon()
     // TODO: print mpz_t in scientitic notation (base)
     mpfr_printf(
         "Testando q(k, m) > 6 * n epsilon(k, m) > 0 para\n"
-        "\t3 <= m <= %llu\n"
-        "\t3 <= k <= min(m, %llu)\n"
+        "\t%llu <= m <= %llu\n"
+        "\t%llu <= k <= min(m, %llu)\n"
         "\tn <= %.2Re\n"
         "com precisão de %ld bits\n",
+        m_min,
         m_max,
+        k_min,
         k_max,
         n_max_fr,
         prec

@@ -10,13 +10,13 @@ from base import nint_dist, prog_bar
 
 ###############################################################################
 
+m_min = 3
+k_min = 3
+
 m_max = 0
 s_max = 0
 n_max = 0
 k_max = 0
-
-m_min = 3
-k_min = 3
 
 def init_cache(prec_init, m_max_init):
     print(
@@ -63,8 +63,8 @@ def init_F():
     
     print(
         "Pré-computando F(k, m + 1) para",
-        f"\t3 <= m <= {m_max}",
-        f"\t3 <= k <= {k_max}",
+        f"\t{m_min} <= m <= {m_max}",
+        f"\t{k_min} <= k <= {k_max}",
         sep="\n"
     )
 
@@ -99,7 +99,7 @@ def init_alpha_g():
 
     print(
         f"Pré-computando alpha_k e g_k para",
-        f"\t3 <= k <= {k_max}",
+        f"\t{k_min} <= k <= {k_max}",
         f"com precisão de {ctx.prec} bits",
         sep="\n")
 
@@ -137,8 +137,8 @@ def init_gamma_mu():
     
     print(
         "Pré-computando gamma(k, m) e mu(k, m) para",
-        f"\t3 <= m <= {m_max}",
-        f"\t3 <= k <= min(m, {k_max})",
+        f"\t{m_min} <= m <= {m_max}",
+        f"\t{k_min} <= k <= min(m, {k_max})",
         f"com precisão de {ctx.prec} bits",
         sep="\n")
 
@@ -172,8 +172,8 @@ def test_q_epsilon():
 
     print(
         "Testando q(k, m) > 6 * n e epsilon(k, m) > 0 para",
-        f"\t3 <= m <= {m_max}",
-        f"\t3 <= k <= min(m, {k_max})",
+        f"\t{m_min} <= m <= {m_max}",
+        f"\t{k_min} <= k <= min(m, {k_max})",
         f"\tn <= {nstr(n_max, 2)}",
         f"com precisão de {ctx.prec} bits",
         sep="\n"
@@ -234,7 +234,7 @@ def init_cotas():
             if temp < n_max:
                 n_max = int(temp)
 
-        prog_bar(m, m_max)
+        print(prog_bar(m, m_max), end="\r")
     
     # Nova cota superior de s. Dada por s <= (n - 2) * (m - 1).
     global s_max
